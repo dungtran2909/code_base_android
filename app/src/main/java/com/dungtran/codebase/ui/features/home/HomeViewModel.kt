@@ -1,7 +1,9 @@
 package com.dungtran.codebase.ui.features.home
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import androidx.work.Constraints
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
@@ -10,6 +12,7 @@ import androidx.work.WorkManager
 import com.dungtran.codebase.data.worker.SyncDataWorker
 import com.dungtran.codebase.domain.usecase.ObserveProductsUseCase
 import com.dungtran.codebase.domain.usecase.SyncProductsUseCase
+import com.dungtran.codebase.ui.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -24,10 +27,15 @@ class HomeViewModel @Inject constructor(
     observeProducts: ObserveProductsUseCase,
     private val syncProducts: SyncProductsUseCase,
     private val workManager: WorkManager,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-
+    
+    private val homeArgs = savedStateHandle.toRoute<Screen.Home>()
     private val syncing = MutableStateFlow(false)
     private val error = MutableStateFlow<String?>(null)
+
+    val userId = homeArgs.userId
+    val userName = homeArgs.userName
 
     val uiState: StateFlow<HomeUiState> =
         combine(

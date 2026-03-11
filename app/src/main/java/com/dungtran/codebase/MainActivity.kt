@@ -8,8 +8,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.rememberNavController
 import com.dungtran.codebase.ui.theme.Code_base_androidTheme
-import com.dungtran.codebase.ui.features.home.HomeRoute
+import com.dungtran.codebase.ui.navigation.AppNavHost
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -19,8 +20,12 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             Code_base_androidTheme {
+                // 1. Khởi tạo NavController
+                val navController = rememberNavController()
+                
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    HomeRoute(
+                    AppNavHost(
+                        navController = navController,
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
