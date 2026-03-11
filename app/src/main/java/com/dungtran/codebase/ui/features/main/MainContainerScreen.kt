@@ -7,11 +7,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemColors
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -35,13 +38,15 @@ fun MainContainerScreen() {
         bottomBar = {
             NavigationBar(
                 modifier = Modifier.height(64.dp),
-                windowInsets = WindowInsets(0, 0, 0, 0)
+                windowInsets = WindowInsets(0, 0, 0, 0), 
+                containerColor = Color.White,
+                tonalElevation = 8.dp
             ) {
                 BottomTab.entries.forEach { tab ->
                     val isSelected = currentDestination?.hierarchy?.any {
                         it.hasRoute(tab.route::class)
                     } == true
-
+                    
                     NavigationBarItem(
                         selected = isSelected,
                         onClick = {
@@ -54,7 +59,20 @@ fun MainContainerScreen() {
                                 restoreState = true
                             }
                         },
-                        icon = { Icon(tab.icon, contentDescription = tab.label) },
+                        icon = {
+                            Icon(
+                                painter = painterResource(
+                                    id = if (isSelected) tab.selectedIcon else tab.unselectedIcon
+                                ),
+                                contentDescription = tab.label,
+                                tint = Color.Unspecified
+                            )
+                        },
+                        colors = NavigationBarItemDefaults.colors(
+                            // Set indicator về Transparent nếu bạn không muốn cái vòng tròn phía sau icon
+                            indicatorColor = Color.Transparent,
+                            // Bạn có thể tùy chỉnh thêm màu sắc tại đây nếu cần
+                        )
                         /*label = { Text(tab.label) }*/ // Ẩn text của bottom bar
                     )
                 }

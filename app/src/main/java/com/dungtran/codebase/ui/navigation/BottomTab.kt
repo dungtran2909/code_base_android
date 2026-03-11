@@ -1,17 +1,29 @@
 package com.dungtran.codebase.ui.navigation
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Chat
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.ui.graphics.vector.ImageVector
+import com.dungtran.codebase.R
 
 enum class BottomTab(
     val route: Any,
-    val icon: ImageVector,
+    val selectedIcon: Int,
+    val unselectedIcon: Int,
     val label: String
 ) {
-    CHAT(Screen.Chat, Icons.Default.Chat, "Chat"),
-    HOME(Screen.Home, Icons.Default.Home, "Home"),
-    PROFILE(Screen.Profile, Icons.Default.Person, "Profile")
+    CHAT(
+        Screen.Chat,
+        R.drawable.ic_chat_tab_selected,
+        R.drawable.ic_chat_tab_unselected,
+        "Chat"
+    ),
+    HOME(
+        Screen.Home,
+        R.drawable.ic_home_tab_selected,
+        R.drawable.ic_home_tab_unselected,
+        "Main"
+    ),
+    PROFILE(
+        Screen.Profile,
+        R.drawable.ic_profile_tab_selected,
+        R.drawable.ic_profile_tab_unselected,
+        "Profile"
+    )
 }
