@@ -37,7 +37,7 @@ class LoginViewModel @Inject constructor() : ViewModel() {
             // Giả lập gọi API login
             delay(2000)
 
-            if (currentState.email == "admin@gmail.com" && currentState.password == "123456") {
+            if (currentState.email == "admin" && currentState.password == "123456") {
                 _uiState.update { it.copy(isLoading = false, isLoginSuccess = true) }
             } else {
                 _uiState.update { it.copy(isLoading = false, errorMessage = "Email hoặc mật khẩu sai") }

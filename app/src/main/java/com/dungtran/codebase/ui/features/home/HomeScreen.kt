@@ -24,19 +24,14 @@ fun HomeRoute(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     HomeScreen(
-        modifier = modifier,
-        uiState = uiState,
-        onSyncClick = viewModel::syncViaWorkManager,
+        modifier = modifier
     )
 }
 
 @Composable
 fun HomeScreen(
-    modifier: Modifier = Modifier,
-    uiState: HomeUiState,
-    onSyncClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Scaffold { innerPadding ->
         Column(
@@ -46,38 +41,10 @@ fun HomeScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                Button(onClick = onSyncClick, enabled = !uiState.isSyncing) {
-                    Text(if (uiState.isSyncing) "Syncing..." else "Sync products")
-                }
-                Text(
-                    text = "Items: ${uiState.products.size}",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
-
-            uiState.errorMessage?.let { msg ->
-                Text(
-                    text = msg,
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
-
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxSize(),
-            ) {
-                items(uiState.products, key = { it.id }) { p ->
-                    Text(
-                        text = "${p.name} - $${p.price}",
-                        style = MaterialTheme.typography.bodyLarge,
-                    )
-                }
-            }
+            Text(
+                text = "HomeScreen",
+                style = MaterialTheme.typography.bodyMedium,
+            )
         }
     }
 }
