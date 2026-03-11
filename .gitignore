@@ -8,17 +8,41 @@ local.properties
 # Log/OS Files
 *.log
 
+# Built application files
+*.apk
+*.aar
+*.ap_
+*.aab
+
+# Files for the ART/Dalvik VM
+*.dex
+
+# App Release Files
+app/release/*
+
 # Android Studio generated files and folders
 captures/
 .externalNativeBuild/
 .cxx/
-*.aab
-*.apk
 output-metadata.json
+
+# Generated files
+bin/
+gen/
+out/
 
 # IntelliJ
 *.iml
 .idea/
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/gradle.xml
+.idea/assetWizardSettings.xml
+.idea/dictionaries
+.idea/libraries
+.idea/caches
+.idea/modules.xml
+.idea/navEditor.xml
 misc.xml
 deploymentTargetDropDown.xml
 render.experimental.xml
@@ -32,3 +56,21 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+# Freeline
+freeline.py
+freeline/
+freeline_project_description.json
+
+# lint
+lint/intermediates/
+lint/generated/
+lint/outputs/
+lint/tmp/
+
+# MacOS
+.DS_Store
+
+# App Specific cases 
+app/release/output.json
+.idea/codeStyles/
