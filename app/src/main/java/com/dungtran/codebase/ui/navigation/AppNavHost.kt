@@ -6,7 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.dungtran.codebase.ui.features.auth.login.LoginRoute
-import com.dungtran.codebase.ui.features.home.HomeRoute
+import com.dungtran.codebase.ui.features.main.MainContainerScreen
 
 @Composable
 fun AppNavHost(
@@ -23,16 +23,16 @@ fun AppNavHost(
             LoginRoute(
                 onLoginSuccess = {
                     // Truyền tham số cực kỳ an toàn và dễ hiểu
-                    navController.navigate(Screen.Home(userId = "10", userName = "DungTran")) {
+                    navController.navigate(Screen.MainContainer) {
                         popUpTo(Screen.Login) { inclusive = true }
                     }
                 }
             )
         }
 
-        // HomeScreen
-        composable<Screen.Home> { 
-            HomeRoute()
+        // MainContainerScreen
+        composable<Screen.MainContainer> {
+            MainContainerScreen()
         }
     }
 }

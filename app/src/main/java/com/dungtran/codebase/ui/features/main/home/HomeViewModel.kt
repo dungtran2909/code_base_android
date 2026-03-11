@@ -1,4 +1,4 @@
-package com.dungtran.codebase.ui.features.home
+package com.dungtran.codebase.ui.features.main.home
 
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
@@ -15,14 +15,14 @@ class HomeViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     
-    private val homeArgs = savedStateHandle.toRoute<Screen.Home>()
+    /*private val homeArgs = savedStateHandle.toRoute<Screen.Home>()
 
     val userId = homeArgs.userId
-    val userName = homeArgs.userName
+    val userName = homeArgs.userName*/
     
     init {
         viewModelScope.launch {
-            Log.i("Atut", "HomeViewModel: $userId - $userName")
+//            Log.i("Atut", "HomeViewModel: $userId - $userName")
         }
     }
 }
