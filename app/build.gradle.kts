@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -6,11 +9,23 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
+fun getProps(fileName: String): Properties {
+    val props = Properties()
+    val propFile = rootProject.file(fileName) // Lấy file từ root project
+    if (propFile.exists()) {
+        props.load(FileInputStream(propFile))
+    }
+    return props
+}
+
+fun Properties.getSafe(key: String): String {
+    val value = getProperty(key) ?: ""
+    return "\"$value\""
+}
+
 android {
     namespace = "com.dungtran.codebase"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.dungtran.codebase"
@@ -22,9 +37,40 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    flavorDimensions += "environment"
+    productFlavors {
+        // 2. Môi trường Development
+        create("develop") {
+            dimension = "environment"
+            applicationIdSuffix = ".dev" // Gói app sẽ là com.dungtran.codebase.dev
+            versionNameSuffix = "-dev"
+            
+            // Bạn có thể định nghĩa Base URL cho API tại đây
+            val devProps = getProps("develop.properties")
+            buildConfigField("String", "BASE_URL", devProps.getSafe("BASE_URL"))
+            buildConfigField("String", "API_KEY", devProps.getSafe("API_KEY"))
+        }
+
+        // 3. Môi trường Production
+        create("product") {
+            dimension = "environment"
+            // Giữ nguyên applicationId gốc: com.dungtran.codebase
+            
+            val prodProps = getProps("product.properties")
+            buildConfigField("String", "BASE_URL", prodProps.getSafe("BASE_URL"))
+            buildConfigField("String", "API_KEY", prodProps.getSafe("API_KEY"))
+        }
+    }
+
+
     buildTypes {
-        release {
+        getByName("debug") {
+            // Cấu hình cho bản Debug của cả 2 môi trường
             isMinifyEnabled = false
+        }
+        release {
+            // Cấu hình cho bản Release của cả 2 môi trường
+            isMinifyEnabled = true // Nên bật để tối ưu app
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -37,6 +83,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
