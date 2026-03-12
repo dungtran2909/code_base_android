@@ -1,4 +1,14 @@
 [versions]
+# SDK Versions
+project-compileSdk = "36"
+project-minSdk = "29"
+project-targetSdk = "36"
+
+# App Versions
+project-versionCode = "1"
+project-versionName = "1.0"
+
+# Lib Versions
 agp = "9.0.1"
 coreKtx = "1.17.0"
 junit = "4.13.2"

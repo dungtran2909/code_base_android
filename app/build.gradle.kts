@@ -25,14 +25,14 @@ fun Properties.getSafe(key: String): String {
 
 android {
     namespace = "com.dungtran.codebase"
-    compileSdk = 36
+    compileSdk = libs.versions.project.compileSdk.get().toInt()
 
     defaultConfig {
         applicationId = "com.dungtran.codebase"
-        minSdk = 29
-        targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        minSdk = libs.versions.project.minSdk.get().toInt()
+        targetSdk = libs.versions.project.targetSdk.get().toInt()
+        versionCode = libs.versions.project.versionCode.get().toInt()
+        versionName = libs.versions.project.versionName.get()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
