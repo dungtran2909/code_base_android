@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.dungtran.codebase.ui.features.auth.login.LoginRoute
 import com.dungtran.codebase.ui.features.main.MainContainerScreen
+import com.dungtran.codebase.ui.features.splash.SplashRoute
 
 @Composable
 fun AppNavHost(
@@ -15,12 +16,20 @@ fun AppNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Login,
-        modifier = modifier
+        startDestination = Screen.Splash,
     ) {
+        composable<Screen.Splash> {
+            SplashRoute(onTimeout = {
+                navController.navigate(Screen.Login) {
+                    popUpTo(Screen.Splash) { inclusive = true }
+                }
+            })
+        }
+        
         // Login Screen
         composable<Screen.Login> {
             LoginRoute(
+                modifier = modifier,
                 onLoginSuccess = {
                     // Truyền tham số cực kỳ an toàn và dễ hiểu
                     navController.navigate(Screen.MainContainer) {
@@ -32,7 +41,7 @@ fun AppNavHost(
 
         // MainContainerScreen
         composable<Screen.MainContainer> {
-            MainContainerScreen()
+            MainContainerScreen(modifier = modifier)
         }
     }
 }

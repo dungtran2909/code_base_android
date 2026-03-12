@@ -94,6 +94,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.com.google.android.material.material)
     
     // Compose BOM
     implementation(platform(libs.androidx.compose.bom))

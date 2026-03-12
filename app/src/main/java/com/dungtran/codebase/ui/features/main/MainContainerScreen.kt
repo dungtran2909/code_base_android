@@ -31,11 +31,14 @@ import com.dungtran.codebase.ui.navigation.BottomTab
 import com.dungtran.codebase.ui.navigation.Screen
 
 @Composable
-fun MainContainerScreen() {
+fun MainContainerScreen(
+    modifier: Modifier = Modifier,
+) {
     val childNavController = rememberNavController()
     val navBackStackEntry by childNavController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
     Scaffold(
+        modifier = modifier,
         bottomBar = {
             // 1. Bọc tất cả trong Surface để tạo bóng đổ (Shadow)
             Surface(
