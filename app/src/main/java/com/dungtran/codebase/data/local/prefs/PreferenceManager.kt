@@ -17,6 +17,7 @@ class PreferenceManager @Inject constructor(
     companion object {
         private const val KEY_ACCESS_TOKEN = "access_token"
         private const val KEY_IS_LOGGED_IN = "is_logged_in"
+        private const val KEY_IS_FIRST_TIME_WELCOME = "is_first_time_welcome"
     }
 
     fun saveAccessToken(token: String) {
@@ -30,6 +31,14 @@ class PreferenceManager @Inject constructor(
 
     fun isLoggedIn(): Boolean {
         return sharedPreferences.getBoolean(KEY_IS_LOGGED_IN, false)
+    }
+
+    fun isFirstTimeLaunchWelcome(): Boolean {
+        return sharedPreferences.getBoolean(KEY_IS_FIRST_TIME_WELCOME, true)
+    }
+    
+    fun setFirstTimeLaunchWelcome(isFirstTime: Boolean) {
+        sharedPreferences.edit { putBoolean(KEY_IS_FIRST_TIME_WELCOME, isFirstTime) }
     }
 
     fun clearData() {
