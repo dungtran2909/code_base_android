@@ -25,7 +25,7 @@ fun SplashRoute(onTimeout: () -> Unit) {
             painter = painterResource(id = R.drawable.splash_screen_background),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop // Đảm bảo ảnh tràn toàn màn hình
+            contentScale = ContentScale.Crop
         )
     }
 }

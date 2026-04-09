@@ -34,7 +34,6 @@ fun AppNavHost(
             val welcomeViewModel: WelcomeViewModel = hiltViewModel()
             WelcomeScreen(
                 onFinish = {
-                    // Lưu trạng thái đã xem Welcome vào PreferenceManager
                     welcomeViewModel.completeWelcome()
                     navController.navigate(Screen.Login) {
                         popUpTo(Screen.Welcome) { inclusive = true }
@@ -48,7 +47,6 @@ fun AppNavHost(
             LoginRoute(
                 modifier = modifier,
                 onLoginSuccess = {
-                    // Truyền tham số cực kỳ an toàn và dễ hiểu
                     navController.navigate(Screen.MainContainer) {
                         popUpTo(Screen.Login) { inclusive = true }
                     }
