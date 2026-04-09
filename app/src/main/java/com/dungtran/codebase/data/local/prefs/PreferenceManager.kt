@@ -18,6 +18,10 @@ class PreferenceManager @Inject constructor(
         private const val KEY_ACCESS_TOKEN = "access_token"
         private const val KEY_IS_LOGGED_IN = "is_logged_in"
         private const val KEY_IS_FIRST_TIME_WELCOME = "is_first_time_welcome"
+
+        private const val KEY_EMAIL = "email"
+        private const val KEY_PASSWORD = "password"
+        private const val KEY_IS_REMEMBER = "is_remember"
     }
 
     fun saveAccessToken(token: String) {
@@ -44,4 +48,30 @@ class PreferenceManager @Inject constructor(
     fun clearData() {
         sharedPreferences.edit { clear() }
     }
+
+    fun saveCredentials(email: String, password: String, isRemember: Boolean) {
+        sharedPreferences.edit().apply {
+            if (isRemember) {
+                putString(KEY_EMAIL, email)
+                putString(KEY_PASSWORD, password)
+                putBoolean(KEY_IS_REMEMBER, true)
+            } else {
+                clearCredentials()
+            }
+            apply()
+        }
+    }
+
+    fun getSavedEmail(): String = sharedPreferences.getString(KEY_EMAIL, "") ?: ""
+    fun getSavedPassword(): String = sharedPreferences.getString(KEY_PASSWORD, "") ?: ""
+    fun isRemembered(): Boolean = sharedPreferences.getBoolean(KEY_IS_REMEMBER, false)
+    
+    fun clearCredentials() {
+        sharedPreferences.edit {
+            remove(KEY_EMAIL)
+            remove(KEY_PASSWORD)
+            remove(KEY_IS_REMEMBER)
+        }
+    }
+    
 }
