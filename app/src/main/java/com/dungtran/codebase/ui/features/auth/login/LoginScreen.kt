@@ -250,12 +250,7 @@ fun LoginScreen(
                         )
                     }
                 }
-
-                val context = LocalContext.current
-                val scope = rememberCoroutineScope()
-                val credentialManager = remember { CredentialManager.create(context) }
-                val webClientId = stringResource(id = R.string.default_web_client_id)
-
+                
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -266,43 +261,7 @@ fun LoginScreen(
                     SocialButton(
                         text = "Google",
                         iconRes = R.drawable.ic_google,
-                        onClick = {
-                            scope.launch {
-                                val googleIdOption = GetGoogleIdOption.Builder()
-                                    .setFilterByAuthorizedAccounts(false)
-                                    .setServerClientId(webClientId)
-                                    .build()
-
-                                val request = GetCredentialRequest.Builder()
-                                    .addCredentialOption(googleIdOption)
-                                    .build()
-
-                                try {
-                                    val result = credentialManager.getCredential(context, request)
-                                    val credential = result.credential
-                                    
-                                    if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
-                                        val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
-                                        val idToken = googleIdTokenCredential.idToken
-                                        onGoogleLoginClick(idToken)
-                                    } else {
-                                        // Handle error
-                                    }
-                                } catch (e: Exception) {
-                                    when (e) {
-                                        is NoCredentialException -> {
-                                            val intent = Intent(android.provider.Settings.ACTION_ADD_ACCOUNT).apply {
-                                                putExtra(android.provider.Settings.EXTRA_ACCOUNT_TYPES, arrayOf("com.google"))
-                                            }
-                                            context.startActivity(intent)
-                                        }
-                                        else -> {
-                                            // Handle error
-                                        }
-                                    }
-                                }
-                            }
-                        },
+                        onClick = handleGoogleLogin(onTokenReceived = onGoogleLoginClick),
                         modifier = Modifier.weight(1f)
                     )
                     Text(
@@ -322,7 +281,7 @@ fun LoginScreen(
     }
 }
 
-/*@Composable
+@Composable
 fun handleGoogleLogin(
     onTokenReceived: (String) -> Unit
 ): () -> Unit {
@@ -330,9 +289,7 @@ fun handleGoogleLogin(
     val scope = rememberCoroutineScope()
     val credentialManager = remember { CredentialManager.create(context) }
     val webClientId = stringResource(id = R.string.default_web_client_id)
-
-    Log.i("Atut", "handleGoogleLogin")
-
+    
     return remember(webClientId) {
         {
             val googleIdOption = GetGoogleIdOption.Builder()
@@ -346,17 +303,17 @@ fun handleGoogleLogin(
 
             scope.launch {
                 try {
-                    val result = credentialManager.getCredential(
-                        context = context,
-                        request = request
-                    )
+                    val result = credentialManager.getCredential(context, request)
                     val credential = result.credential
-                    if (credential is GoogleIdTokenCredential) {
-                        Log.i("Atut", "token: ${credential.idToken}")
-                        onTokenReceived(credential.idToken)
+
+                    if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+                        val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+                        val idToken = googleIdTokenCredential.idToken
+                        onTokenReceived(idToken)
+                    } else {
+                        // Handle error
                     }
                 } catch (e: Exception) {
-                    Log.i("Atut", "error: ${e.message}")
                     when (e) {
                         is NoCredentialException -> {
                             val intent = Intent(android.provider.Settings.ACTION_ADD_ACCOUNT).apply {
@@ -365,14 +322,14 @@ fun handleGoogleLogin(
                             context.startActivity(intent)
                         }
                         else -> {
-                            // Xử lý các lỗi khác như user hủy bỏ (GetCredentialCancellationException)
+                            // Handle error
                         }
                     }
                 }
             }
         }
     }
-}*/
+}
 
 @Preview(showBackground = true, name = "Màn hình Login đang Loading")
 @Composable
