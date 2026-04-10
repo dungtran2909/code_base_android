@@ -1,5 +1,6 @@
 package com.dungtran.codebase.data.repository
 
+import com.dungtran.codebase.data.local.prefs.DataStoreManager
 import com.dungtran.codebase.domain.model.User
 import com.dungtran.codebase.domain.repository.AuthRepository
 import com.google.firebase.auth.FirebaseAuth
@@ -11,6 +12,7 @@ import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
+    private val dataStoreManager: DataStoreManager,
     private val firestore: FirebaseFirestore
 ) : AuthRepository {
     override suspend fun signInWithEmail(email: String, password: String): Result<Unit> {
@@ -21,10 +23,10 @@ class AuthRepositoryImpl @Inject constructor(
         return try {
             val credential = GoogleAuthProvider.getCredential(idToken, null)
             val authResult = firebaseAuth.signInWithCredential(credential).await()
-            val firebaseUser = authResult.user
 
-            if (firebaseUser != null) {
-                checkAndCreateUserProfile(firebaseUser)
+            authResult.user?.let { 
+                checkAndCreateUserProfile(it)
+                dataStoreManager.saveAccessToken(it.uid)
             }
             Result.success(Unit)
         } catch (e: Exception) {

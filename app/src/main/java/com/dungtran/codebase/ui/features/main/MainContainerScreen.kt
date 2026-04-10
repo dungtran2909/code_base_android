@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -32,6 +33,7 @@ import com.dungtran.codebase.ui.navigation.Screen
 
 @Composable
 fun MainContainerScreen(
+    rootNavController: NavHostController,
     modifier: Modifier = Modifier,
 ) {
     val childNavController = rememberNavController()
@@ -103,7 +105,15 @@ fun MainContainerScreen(
         ) {
             composable<Screen.Chat> { ChatRoute() }
             composable<Screen.Home> { HomeRoute() }
-            composable<Screen.Profile> { ProfileRoute() }
+            composable<Screen.Profile> {
+                ProfileRoute(
+                    onLogout = {
+                        rootNavController.navigate(Screen.Login) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    }
+                )
+            }
         }
     }
 }

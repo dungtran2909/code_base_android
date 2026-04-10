@@ -56,7 +56,10 @@ fun AppNavHost(
 
         // MainContainerScreen
         composable<Screen.MainContainer> {
-            MainContainerScreen(modifier = modifier)
+            MainContainerScreen(
+                rootNavController = navController,
+                modifier = modifier
+            )
         }
     }
 }

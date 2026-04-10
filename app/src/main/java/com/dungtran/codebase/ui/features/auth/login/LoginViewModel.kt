@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dungtran.codebase.data.local.prefs.DataStoreManager
-import com.dungtran.codebase.domain.usecase.SignInWithGoogleUseCase
+import com.dungtran.codebase.domain.usecase.auth.SignInWithGoogleUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow

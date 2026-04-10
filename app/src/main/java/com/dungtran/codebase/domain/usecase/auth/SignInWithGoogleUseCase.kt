@@ -1,4 +1,4 @@
-package com.dungtran.codebase.domain.usecase
+package com.dungtran.codebase.domain.usecase.auth
 
 import com.dungtran.codebase.domain.repository.AuthRepository
 import javax.inject.Inject

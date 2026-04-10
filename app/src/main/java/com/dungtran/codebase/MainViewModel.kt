@@ -24,10 +24,21 @@ class MainViewModel @Inject constructor(
     val startDestination = _startDestination.asStateFlow()
 
     init {
+        checkInitialState()
+    }
+
+    private fun checkInitialState() {
         viewModelScope.launch {
             delay(2000)
-            val isFirstTimeLaunchWelcome = dataStoreManager.isFirstTimeLaunchWelcome.first()
-            val destination = if (isFirstTimeLaunchWelcome) Screen.Welcome else Screen.Login
+            val isFirstTime = dataStoreManager.isFirstTimeLaunchWelcome.first()
+            val isExistToken = !dataStoreManager.accessToken.first().isNullOrEmpty()
+
+            val destination = when {
+                isFirstTime -> Screen.Welcome
+                isExistToken -> Screen.MainContainer
+                else -> Screen.Login
+            }
+            
             _startDestination.value = destination
             _isLoading.value = false
         }
