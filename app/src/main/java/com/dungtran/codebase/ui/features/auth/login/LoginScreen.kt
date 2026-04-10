@@ -95,7 +95,6 @@ fun LoginScreen(
                 Text(
                     text = "App base made by Dũng Trần",
                     style = MaterialTheme.typography.labelSmall.copy(color = Color.Gray),
-                    modifier = Modifier.padding(top = 8.dp)
                 )
 
                 Text(
@@ -208,7 +207,7 @@ fun LoginScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 16.dp),
-                    horizontalArrangement = Arrangement.Center, // Căn giữa dòng này
+                    horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
@@ -239,6 +238,30 @@ fun LoginScreen(
                         )
                     }
                 }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(top = 24.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    SocialButton(
+                        text = "Google",
+                        iconRes = R.drawable.ic_google,
+                        onClick = { /* Handle Login Google */ },
+                        modifier = Modifier.weight(1f)
+                    )
+                    Text(
+                        text = "or",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray
+                    )
+                    SocialButton(
+                        text = "Facebook",
+                        iconRes = R.drawable.ic_facebook,
+                        onClick = { /* Handle Login Facebook */ },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
             }
         }
     }
@@ -247,7 +270,6 @@ fun LoginScreen(
 @Preview(showBackground = true, name = "Màn hình Login đang Loading")
 @Composable
 fun LoginScreenLoadingPreview() {
-    // Mock state cho trường hợp đang đăng nhập
     val mockUiState = LoginUiState(
         email = "user@example.com",
         password = "password123",
@@ -270,7 +292,6 @@ fun LoginScreenLoadingPreview() {
 @Preview(showBackground = true, name = "Màn hình Login có lỗi")
 @Composable
 fun LoginScreenErrorPreview() {
-    // Mock state cho trường hợp báo lỗi
     val mockUiState = LoginUiState(
         email = "sai-email",
         password = "123",
