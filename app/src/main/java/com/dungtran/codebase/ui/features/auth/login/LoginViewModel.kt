@@ -3,19 +3,20 @@ package com.dungtran.codebase.ui.features.auth.login
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dungtran.codebase.data.local.prefs.PreferenceManager
+import com.dungtran.codebase.data.local.prefs.DataStoreManager
 import com.dungtran.codebase.domain.usecase.SignInWithGoogleUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val prefManager: PreferenceManager, 
+    private val dataStoreManager: DataStoreManager,
     private val signInWithGoogleUseCase: SignInWithGoogleUseCase
 ) : ViewModel() {
 
@@ -23,13 +24,19 @@ class LoginViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     init {
-        if (prefManager.isRemembered()) {
-            _uiState.update {
-                it.copy(
-                    email = prefManager.getSavedEmail(),
-                    password = prefManager.getSavedPassword(),
-                    isRememberMe = true
-                )
+        viewModelScope.launch {
+            // Lấy trạng thái "Ghi nhớ" từ DataStore
+            val isRemembered = dataStoreManager.isRemembered.first()
+            if (isRemembered) {
+                val email = dataStoreManager.savedEmail.first()
+                val password = dataStoreManager.savedPassword.first()
+                _uiState.update {
+                    it.copy(
+                        email = email,
+                        password = password,
+                        isRememberMe = true
+                    )
+                }
             }
         }
     }
@@ -53,13 +60,13 @@ class LoginViewModel @Inject constructor(
             return
         }
 
-        prefManager.saveCredentials(
-            email = currentState.email,
-            password = currentState.password,
-            isRemember = currentState.isRememberMe
-        )
-
         viewModelScope.launch {
+            dataStoreManager.saveCredentials(
+                email = currentState.email,
+                password = currentState.password,
+                isRemember = currentState.isRememberMe
+            )
+            
             _uiState.update { it.copy(isLoading = true) }
 
             // Giả lập gọi API login

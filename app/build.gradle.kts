@@ -101,6 +101,7 @@ dependencies {
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.googleid)
+    implementation(libs.androidx.datastore.preferences )
     
     // Compose BOM
     implementation(platform(libs.androidx.compose.bom))
