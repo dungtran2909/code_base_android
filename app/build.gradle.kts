@@ -97,6 +97,10 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.com.google.android.material.material)
+    implementation(libs.play.services.auth)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
     
     // Compose BOM
     implementation(platform(libs.androidx.compose.bom))
@@ -109,6 +113,7 @@ dependencies {
     // Firebase BOM
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
 
     // Another lib support by Kotlinx
     implementation(libs.kotlinx.serialization.json)

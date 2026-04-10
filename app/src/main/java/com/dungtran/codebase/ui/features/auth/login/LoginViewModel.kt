@@ -1,8 +1,10 @@
 package com.dungtran.codebase.ui.features.auth.login
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dungtran.codebase.data.local.prefs.PreferenceManager
+import com.dungtran.codebase.domain.usecase.SignInWithGoogleUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val prefManager: PreferenceManager
+    private val prefManager: PreferenceManager, 
+    private val signInWithGoogleUseCase: SignInWithGoogleUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginUiState())
@@ -72,6 +75,21 @@ class LoginViewModel @Inject constructor(
                     )
                 }
             }
+        }
+    }
+    
+    fun loginWithGoogle(idToken: String) {
+        viewModelScope.launch { 
+            _uiState.update { it.copy(isLoading = true) }
+            signInWithGoogleUseCase(idToken)
+                .onSuccess {
+                    Log.i("Atut", "Login success")
+                    _uiState.update { it.copy(isLoading = false, isLoginSuccess = true) }
+                }
+                .onFailure { e ->
+                    Log.i("Atut", "Login onFailure: ${e.message}")
+                    _uiState.update { it.copy(isLoading = false, errorMessage = e.message) }
+                }
         }
     }
 }

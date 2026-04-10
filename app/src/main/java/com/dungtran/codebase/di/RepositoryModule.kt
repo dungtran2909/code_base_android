@@ -1,6 +1,8 @@
 package com.dungtran.codebase.di
 
+import com.dungtran.codebase.data.repository.AuthRepositoryImpl
 import com.dungtran.codebase.data.repository.ProductRepositoryImpl
+import com.dungtran.codebase.domain.repository.AuthRepository
 import com.dungtran.codebase.domain.repository.ProductRepository
 import dagger.Binds
 import dagger.Module
@@ -17,5 +19,11 @@ abstract class RepositoryModule {
     abstract fun bindProductRepository(
         impl: ProductRepositoryImpl,
     ): ProductRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAuthRepository(
+        authRepositoryImpl: AuthRepositoryImpl
+    ): AuthRepository
 }
 

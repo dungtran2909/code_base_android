@@ -1,5 +1,6 @@
 package com.dungtran.codebase.ui.features.auth.login
 
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -9,21 +10,31 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.*
+import androidx.credentials.CredentialManager
+import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.NoCredentialException
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dungtran.codebase.R
 import com.dungtran.codebase.ui.common.*
 import com.dungtran.codebase.ui.theme.Primary
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginRoute(
@@ -45,6 +56,7 @@ fun LoginRoute(
         onPasswordChange = viewModel::onPasswordChange,
         onRememberMeChange = viewModel::onRememberMeChange,
         onLoginClick = viewModel::login,
+        onGoogleLoginClick = viewModel::loginWithGoogle,
         modifier = modifier
     )
 }
@@ -56,6 +68,7 @@ fun LoginScreen(
     onPasswordChange: (String) -> Unit,
     onRememberMeChange: (Boolean) -> Unit,
     onLoginClick: () -> Unit,
+    onGoogleLoginClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -88,7 +101,6 @@ fun LoginScreen(
                 Text(
                     text = "Mixi Vivu",
                     style = MaterialTheme.typography.headlineMedium,
-                    fontSize = 30.sp,
                     modifier = Modifier.padding(top = 8.dp)
                 )
 
@@ -239,15 +251,58 @@ fun LoginScreen(
                     }
                 }
 
+                val context = LocalContext.current
+                val scope = rememberCoroutineScope()
+                val credentialManager = remember { CredentialManager.create(context) }
+                val webClientId = stringResource(id = R.string.default_web_client_id)
+
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(top = 24.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 24.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     SocialButton(
                         text = "Google",
                         iconRes = R.drawable.ic_google,
-                        onClick = { /* Handle Login Google */ },
+                        onClick = {
+                            scope.launch {
+                                val googleIdOption = GetGoogleIdOption.Builder()
+                                    .setFilterByAuthorizedAccounts(false)
+                                    .setServerClientId(webClientId)
+                                    .build()
+
+                                val request = GetCredentialRequest.Builder()
+                                    .addCredentialOption(googleIdOption)
+                                    .build()
+
+                                try {
+                                    val result = credentialManager.getCredential(context, request)
+                                    val credential = result.credential
+                                    
+                                    if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+                                        val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+                                        val idToken = googleIdTokenCredential.idToken
+                                        onGoogleLoginClick(idToken)
+                                    } else {
+                                        // Handle error
+                                    }
+                                } catch (e: Exception) {
+                                    when (e) {
+                                        is NoCredentialException -> {
+                                            val intent = Intent(android.provider.Settings.ACTION_ADD_ACCOUNT).apply {
+                                                putExtra(android.provider.Settings.EXTRA_ACCOUNT_TYPES, arrayOf("com.google"))
+                                            }
+                                            context.startActivity(intent)
+                                        }
+                                        else -> {
+                                            // Handle error
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         modifier = Modifier.weight(1f)
                     )
                     Text(
@@ -267,6 +322,58 @@ fun LoginScreen(
     }
 }
 
+/*@Composable
+fun handleGoogleLogin(
+    onTokenReceived: (String) -> Unit
+): () -> Unit {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val credentialManager = remember { CredentialManager.create(context) }
+    val webClientId = stringResource(id = R.string.default_web_client_id)
+
+    Log.i("Atut", "handleGoogleLogin")
+
+    return remember(webClientId) {
+        {
+            val googleIdOption = GetGoogleIdOption.Builder()
+                .setFilterByAuthorizedAccounts(false)
+                .setServerClientId(webClientId)
+                .build()
+
+            val request = GetCredentialRequest.Builder()
+                .addCredentialOption(googleIdOption)
+                .build()
+
+            scope.launch {
+                try {
+                    val result = credentialManager.getCredential(
+                        context = context,
+                        request = request
+                    )
+                    val credential = result.credential
+                    if (credential is GoogleIdTokenCredential) {
+                        Log.i("Atut", "token: ${credential.idToken}")
+                        onTokenReceived(credential.idToken)
+                    }
+                } catch (e: Exception) {
+                    Log.i("Atut", "error: ${e.message}")
+                    when (e) {
+                        is NoCredentialException -> {
+                            val intent = Intent(android.provider.Settings.ACTION_ADD_ACCOUNT).apply {
+                                putExtra(android.provider.Settings.EXTRA_ACCOUNT_TYPES, arrayOf("com.google"))
+                            }
+                            context.startActivity(intent)
+                        }
+                        else -> {
+                            // Xử lý các lỗi khác như user hủy bỏ (GetCredentialCancellationException)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}*/
+
 @Preview(showBackground = true, name = "Màn hình Login đang Loading")
 @Composable
 fun LoginScreenLoadingPreview() {
@@ -284,6 +391,7 @@ fun LoginScreenLoadingPreview() {
         onPasswordChange = {},
         onRememberMeChange = {},
         onLoginClick = {},
+        onGoogleLoginClick = {},
         modifier = Modifier
     )
 }
