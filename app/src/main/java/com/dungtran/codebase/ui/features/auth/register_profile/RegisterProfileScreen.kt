@@ -1,25 +1,23 @@
-package com.dungtran.codebase.ui.features.auth.register
+package com.dungtran.codebase.ui.features.auth.register_profile
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.LocationCity
+import androidx.compose.material.icons.filled.PhoneIphone
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -32,7 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -40,42 +37,43 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dungtran.codebase.R
 import com.dungtran.codebase.ui.common.LoadingButton
 import com.dungtran.codebase.ui.common.TextFieldWithIcon
+import com.dungtran.codebase.ui.common.UserAvatarView
 import com.dungtran.codebase.ui.theme.Primary
 
 @Composable
-fun RegisterRoute(
-    onRegisterSuccess: (String) -> Unit,
+fun RegisterProfileRoute(
     modifier: Modifier = Modifier,
-    viewModel: RegisterViewModel = hiltViewModel(),
-    onBackToLogin: () -> Unit
+    onRegisterProfileSuccess: () -> Unit,
+    onBackToLogin: () -> Unit,
+    email: String = "",
+    viewModel: RegisterProfileViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(uiState.isRegisterSuccess) {
-        if (uiState.isRegisterSuccess) {
-            onRegisterSuccess.invoke(uiState.email)
+    LaunchedEffect(uiState.isRegisterProfileSuccess) {
+        if (uiState.isRegisterProfileSuccess) {
+            onRegisterProfileSuccess()
         }
     }
-    
-    RegisterScreen(
+   
+    RegisterProfileScreen(
         uiState = uiState,
-        onEmailChange = viewModel::onEmailChange,
-        onPasswordChange = viewModel::onPasswordChange,
-        onPasswordConfirmChange = viewModel::onPasswordConfirmChange,
-        onRegisterClick = viewModel::registerWithEmail,
-        onBackToLogin = onBackToLogin,
+        onDisplayNameChange = viewModel::onDisplayNameChange,
+        onBackToLogin = {
+            onBackToLogin()
+            viewModel.onCancelRegisterNewUser()
+        },
+        onCreateUser = viewModel::createUserProfile,
         modifier = modifier
     )
 }
 
 @Composable
-fun RegisterScreen(
-    uiState: RegisterUiState,
-    onEmailChange: (String) -> Unit,
-    onPasswordChange: (String) -> Unit,
-    onPasswordConfirmChange: (String) -> Unit,
-    onRegisterClick: () -> Unit,
+fun RegisterProfileScreen(
+    uiState: RegisterProfileUiState,
+    onDisplayNameChange: (String) -> Unit,
     onBackToLogin: () -> Unit,
+    onCreateUser: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -110,26 +108,13 @@ fun RegisterScreen(
         ) {
             Spacer(modifier = Modifier.height(60.dp))
 
-            Image(
-                painter = painterResource(id = R.drawable.icon_app),
-                modifier = Modifier.size(100.dp),
-                contentDescription = null,
-                contentScale = ContentScale.Inside
+            UserAvatarView(
+                imageUrl = "https://images2.thanhnien.vn/528068263637045248/2025/9/22/1-1758546255166427717171.jpg",
+                size = 150.dp
             )
 
             Text(
-                text = "Mixi Vivu",
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(top = 8.dp)
-            )
-
-            Text(
-                text = "App base made by Dũng Trần",
-                style = MaterialTheme.typography.labelSmall.copy(color = Color.Gray),
-            )
-
-            Text(
-                text = "Register",
+                text = "Profile",
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -138,7 +123,7 @@ fun RegisterScreen(
             )
 
             Text(
-                text = "Enter your email and password to register",
+                text = "Enter your info profile",
                 style = MaterialTheme.typography.labelSmall.copy(color = Color.Gray),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -148,7 +133,8 @@ fun RegisterScreen(
 
             TextFieldWithIcon(
                 value = uiState.email,
-                onValueChange = onEmailChange,
+                onValueChange = {},
+                readOnly = true,
                 label = "Email",
                 leadingIcon = {
                     Icon(
@@ -162,13 +148,12 @@ fun RegisterScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             TextFieldWithIcon(
-                value = uiState.password,
-                onValueChange = onPasswordChange,
-                label = "Password",
-                isPassword = true,
+                value = uiState.displayName,
+                onValueChange = onDisplayNameChange,
+                label = "Name",
                 leadingIcon = {
                     Icon(
-                        imageVector = Icons.Default.Lock,
+                        imageVector = Icons.Default.AccountCircle,
                         contentDescription = null,
                         tint = Primary
                     )
@@ -178,74 +163,42 @@ fun RegisterScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             TextFieldWithIcon(
-                value = uiState.passwordConfirm,
-                onValueChange = onPasswordConfirmChange,
-                label = "Password Confirm",
-                isPassword = true,
+                value = "",
+                onValueChange = {},
+                label = "Phone number",
                 leadingIcon = {
                     Icon(
-                        imageVector = Icons.Default.Lock,
+                        imageVector = Icons.Default.PhoneIphone,
                         contentDescription = null,
                         tint = Primary
                     )
                 }
             )
-            
-            if (uiState.errorMessage != null) {
-                Text(
-                    text = uiState.errorMessage,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
-            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            TextFieldWithIcon(
+                value = "",
+                onValueChange = {},
+                label = "Location",
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.LocationCity,
+                        contentDescription = null,
+                        tint = Primary
+                    )
+                }
+            )
 
             Spacer(modifier = Modifier.height(32.dp))
 
             LoadingButton(
-                onClick = onRegisterClick,
+                onClick = onCreateUser,
                 modifier = Modifier.fillMaxWidth(),
                 isLoading = uiState.isLoading,
                 enabled = !uiState.isLoading,
-                text = "Register"
+                text = "Done"
             )
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Have an account? ",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray
-                )
-
-                Row(
-                    modifier = Modifier.clickable { onBackToLogin() },
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "SignIn",
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            fontWeight = FontWeight.Bold
-                        ),
-                        color = Color(0xFF4A90E2)
-                    )
-
-                    Icon(
-                        imageVector = Icons.Default.PlayArrow,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(14.dp)
-                            .padding(start = 1.dp),
-                        tint = Color(0xFF4A90E2)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(100.dp))
         }
     }
 }

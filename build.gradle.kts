@@ -3,6 +3,8 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        maven("https://maven.google.com")
+        maven("https://jitpack.io")
     }
    /* configurations.classpath {
         resolutionStrategy {

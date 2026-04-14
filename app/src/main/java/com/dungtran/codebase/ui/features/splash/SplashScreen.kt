@@ -14,8 +14,8 @@ import kotlinx.coroutines.delay
 @Composable
 fun SplashRoute(onTimeout: () -> Unit) {
     LaunchedEffect(Unit) {
-        delay(3000)
-        onTimeout()
+       /* delay(3000)
+        onTimeout()*/
     }
 
     Box(

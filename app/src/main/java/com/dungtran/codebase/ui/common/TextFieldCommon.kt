@@ -22,7 +22,9 @@ fun TextFieldWithIcon(
     onValueChange: (String) -> Unit,
     label: String,
     leadingIcon: @Composable (() -> Unit)? = null,
-    isPassword: Boolean = false
+    readOnly: Boolean = false,
+    isPassword: Boolean = false, 
+    isNumberOnly: Boolean = false
 ) {
     var isPasswordVisible by remember { mutableStateOf(false) }
     
@@ -31,6 +33,7 @@ fun TextFieldWithIcon(
         onValueChange = onValueChange,
         label = { Text(label) },
         leadingIcon = leadingIcon,
+        readOnly = readOnly,
         trailingIcon = if (isPassword) {
             {
                 IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
@@ -50,7 +53,11 @@ fun TextFieldWithIcon(
             VisualTransformation.None
         },
         keyboardOptions = KeyboardOptions(
-            keyboardType = if (isPassword) KeyboardType.Password else KeyboardType.Text
+            keyboardType = when {
+                isPassword -> KeyboardType.Password
+                isNumberOnly -> KeyboardType.Number
+                else -> KeyboardType.Text
+            }
         ),
         shape = RoundedCornerShape(12.dp),
         colors = OutlinedTextFieldDefaults.colors(

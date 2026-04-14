@@ -12,6 +12,7 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
 class DataStoreManager(private val context: Context){
     private object PreferencesKeys {
         val ACCESS_TOKEN = stringPreferencesKey("access_token")
+        val EMAIL_REGISTER = stringPreferencesKey("email_register")
         /*val IS_LOGGED_IN = booleanPreferencesKey("is_logged_in")*/
         val IS_FIRST_TIME_WELCOME = booleanPreferencesKey("is_first_time_welcome")
         val EMAIL = stringPreferencesKey("email")
@@ -21,6 +22,7 @@ class DataStoreManager(private val context: Context){
 
     /* --- ACCESS TOKEN & LOGIN STATUS --- */
     val accessToken: Flow<String?> = context.dataStore.data.map { it[PreferencesKeys.ACCESS_TOKEN] }
+    val emailRegister: Flow<String?> = context.dataStore.data.map { it[PreferencesKeys.EMAIL_REGISTER] }
     /*val isLoggedIn: Flow<Boolean> = context.dataStore.data.map { it[PreferencesKeys.IS_LOGGED_IN] ?: false }*/
 
     suspend fun saveAccessToken(token: String) {
@@ -32,6 +34,18 @@ class DataStoreManager(private val context: Context){
     suspend fun clearAccessToken() {
         context.dataStore.edit { preferences ->
             preferences.remove(PreferencesKeys.ACCESS_TOKEN)
+        }
+    }
+    
+    suspend fun saveEmailRegister(email: String) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.EMAIL_REGISTER] = email
+        }
+    }
+    
+    suspend fun clearEmailRegister() {
+        context.dataStore.edit { preferences ->
+            preferences.remove(PreferencesKeys.EMAIL_REGISTER)
         }
     }
 

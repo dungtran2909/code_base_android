@@ -38,8 +38,6 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val startDes by viewModel.startDestination.collectAsStateWithLifecycle()
                 
-                // 2. Truyền startDestination vào NavHost
-                
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     AppNavHost(
                         modifier = Modifier.padding(innerPadding),
