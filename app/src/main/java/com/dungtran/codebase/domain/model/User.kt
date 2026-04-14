@@ -5,5 +5,7 @@ data class User(
     val email: String = "",
     val displayName: String = "",
     val photoUrl: String = "",
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = 0L, 
+    val isMe: Boolean = false, 
+    val thinking: String = ""
 )

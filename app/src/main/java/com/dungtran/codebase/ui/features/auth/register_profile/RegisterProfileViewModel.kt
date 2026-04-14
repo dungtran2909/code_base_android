@@ -53,7 +53,8 @@ class RegisterProfileViewModel @Inject constructor(
                 uid = accessToken,
                 displayName = currentState.displayName, 
                 email = currentState.email, 
-                photoUrl = "https://images2.thanhnien.vn/528068263637045248/2025/9/22/1-1758546255166427717171.jpg"
+                photoUrl = "https://images2.thanhnien.vn/528068263637045248/2025/9/22/1-1758546255166427717171.jpg", 
+                createdAt = System.currentTimeMillis()
             )
             _uiState.value = _uiState.value.copy(isLoading = true)
             authUseCase.createUserProfileUseCase(user = newUser)

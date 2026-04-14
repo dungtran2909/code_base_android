@@ -41,6 +41,7 @@ fun MainContainerScreen(
     val currentDestination = navBackStackEntry?.destination
     Scaffold(
         modifier = modifier,
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         bottomBar = {
             // 1. Bọc tất cả trong Surface để tạo bóng đổ (Shadow)
             Surface(

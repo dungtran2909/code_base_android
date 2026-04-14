@@ -25,7 +25,7 @@ fun UserAvatarView(
     imageUrl: String?,
     size: Dp = 100.dp,
     borderWidth: Dp = 3.dp,
-    borderColor: Color = Color(0xFF818CF8),
+    borderColor: Color = Color(0xFF70C8C8),
     shape: Shape = CircleShape,
     contentDescription: String? = "User Avatar"
 ) {
