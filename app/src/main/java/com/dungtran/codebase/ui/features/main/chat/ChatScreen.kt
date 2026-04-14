@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dungtran.codebase.R
+import com.dungtran.codebase.domain.model.Chat
 import com.dungtran.codebase.domain.model.User
 import com.dungtran.codebase.ui.common.UserAvatarView
 
@@ -49,14 +50,16 @@ fun ChatRoute(
 
     ChatScreen(
         modifier = modifier,
-        uiState = uiState
+        uiState = uiState,
+        gotoPrivateChat = viewModel::gotoPrivateChat
     )
 }
 
 @Composable
 fun ChatScreen(
     modifier: Modifier = Modifier,
-    uiState: ChatUiState
+    uiState: ChatUiState,
+    gotoPrivateChat: (String) -> Unit
 ) {
     Box(
         modifier = modifier
@@ -98,9 +101,10 @@ fun ChatScreen(
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(uiState.users) { user ->
-                    HeaderItem(user = user, onClick = {
-                        // Xử lý khi click vào để mở màn hình chat 1-1
-                    })
+                    HeaderItem(
+                        user = user, 
+                        gotoPrivateChat = gotoPrivateChat
+                    )
                 }
             }
 
@@ -110,10 +114,15 @@ fun ChatScreen(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(uiState.users) { user ->
-                    ChatItem(user = user, onClick = {
-                        // Xử lý khi click vào để mở màn hình chat 1-1
-                    })
+                items(uiState.chats) { chat ->
+                    val partnerId = chat.members.firstOrNull { it != uiState.myUid }
+                    val partnerInfo = uiState.users.find { it.uid == partnerId }
+                    ChatItem(
+                        displayName = partnerInfo?.displayName ?: "Người dùng",
+                        lastMessage = chat.lastMessage,
+                        photoUrl = partnerInfo?.photoUrl ?: "",
+                        onClick = { }
+                    )
                 }
             }
         }
@@ -121,14 +130,14 @@ fun ChatScreen(
 }
 
 @Composable
-fun HeaderItem(user: User, onClick: () -> Unit) {
+fun HeaderItem(user: User, gotoPrivateChat: (String) -> Unit) {
     Box(
         contentAlignment = Alignment.TopCenter,
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
             modifier = Modifier
-                .clickable { onClick() }
+                .clickable { gotoPrivateChat(user.uid) }
                 .padding(bottom = 8.dp, top = 30.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -148,7 +157,9 @@ fun HeaderItem(user: User, onClick: () -> Unit) {
         if (user.isMe || user.thinking.isNotEmpty()) {
             Box(
                 contentAlignment = Alignment.Center,
-                modifier = Modifier.width(70.dp).height(40.dp)
+                modifier = Modifier
+                    .width(70.dp)
+                    .height(40.dp)
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_bubble_chat),
@@ -158,7 +169,9 @@ fun HeaderItem(user: User, onClick: () -> Unit) {
                 )
 
                 Text(
-                    modifier = Modifier.padding(bottom = 4.dp).padding(horizontal = 4.dp),
+                    modifier = Modifier
+                        .padding(bottom = 4.dp)
+                        .padding(horizontal = 4.dp),
                     text = when {
                         user.isMe && user.thinking.isEmpty() -> "Chia sẻ\nghi chú..."
                         else -> user.thinking
@@ -179,7 +192,7 @@ fun HeaderItem(user: User, onClick: () -> Unit) {
 }
 
 @Composable
-fun ChatItem(user: User, onClick: () -> Unit) {
+fun ChatItem(displayName: String, lastMessage: String, photoUrl: String, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -188,18 +201,18 @@ fun ChatItem(user: User, onClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         UserAvatarView(
-            imageUrl = user.photoUrl,
+            imageUrl = photoUrl,
             size = 50.dp,
             borderWidth = 0.dp
         )
 
         Column(modifier = Modifier.padding(start = 12.dp)) {
             Text(
-                text = user.displayName,
+                text = displayName,
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
             )
             Text(
-                text = user.email,
+                text = lastMessage,
                 style = MaterialTheme.typography.labelSmall,
                 color = Color.Gray
             )
