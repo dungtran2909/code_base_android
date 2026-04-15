@@ -69,7 +69,7 @@ fun ChatScreen(
         Image(
             painter = painterResource(id = R.drawable.background_screen_type_three),
             contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().padding(top = 40.dp),
             contentScale = ContentScale.Crop
         )
         Row(

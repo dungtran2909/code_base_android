@@ -67,9 +67,10 @@ class ChatViewModel @Inject constructor(
             user.copy(isMe = user.uid == myUid)
         }.sortedByDescending { it.isMe }.toMutableList()
     }
-    
-    fun getRoomId(myId: String, partnerId: String): String {
-        return if (myId < partnerId) "${myId}_${partnerId}" else "${partnerId}_${myId}"
+
+    private fun getRoomId(user1Id: String, user2Id: String): String {
+        val ids = listOf(user1Id, user2Id).sorted()
+        return "${ids[0]}_${ids[1]}"
     }
     
     fun gotoPrivateChat(partnerId: String) {

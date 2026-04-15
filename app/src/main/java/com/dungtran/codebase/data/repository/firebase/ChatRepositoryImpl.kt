@@ -59,4 +59,17 @@ class ChatRepositoryImpl @Inject constructor(
             }
         awaitClose { subscription.remove() }
     }
+
+    override suspend fun deleteRoom(roomId: String): Result<Unit> {
+        return try {
+            firestore.collection("chat_rooms")
+                .document(roomId)
+                .delete()
+                .await()
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }
