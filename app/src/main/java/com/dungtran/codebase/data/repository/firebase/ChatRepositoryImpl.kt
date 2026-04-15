@@ -2,6 +2,7 @@ package com.dungtran.codebase.data.repository.firebase
 
 import androidx.work.await
 import com.dungtran.codebase.domain.model.Chat
+import com.dungtran.codebase.domain.model.Message
 import com.dungtran.codebase.domain.repository.firebase.ChatRepository
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -72,4 +73,39 @@ class ChatRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
+
+    override fun getMessages(roomId: String): Flow<Result<List<Message>>> = callbackFlow {
+        val subscription = firestore.collection("chat_rooms")
+            .document(roomId)
+            .collection("messages")
+            .orderBy("timestamp", Query.Direction.ASCENDING)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    trySend(Result.failure(error))
+                    return@addSnapshotListener
+                }
+                val messages = snapshot?.documents?.mapNotNull { it.toObject(Message::class.java) } ?: emptyList()
+                trySend(Result.success(messages))
+            }
+        awaitClose { subscription.remove() }
+    }
+
+    override suspend fun sendMessage(roomId: String, message: Message): Result<Unit> {
+        return try {
+            val roomRef = firestore.collection("chat_rooms").document(roomId)
+            val messageRef = roomRef.collection("messages").document()
+            val finalMessage = message.copy(messageId = messageRef.id)
+
+            firestore.runBatch { batch ->
+                batch.set(messageRef, finalMessage)
+                batch.update(roomRef, "lastMessage", message.content)
+                batch.update(roomRef, "lastTimestamp", message.timestamp)
+            }.await()
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    
 }

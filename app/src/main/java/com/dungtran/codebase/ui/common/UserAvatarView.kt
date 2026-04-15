@@ -32,7 +32,7 @@ fun UserAvatarView(
     Box(
         modifier = Modifier
             .size(size) 
-            .border(width = borderWidth, color = borderColor, shape = shape) // Vẽ viền tròn
+            .border(width = borderWidth, color = borderColor, shape = shape) 
             .clip(shape) 
     ) {
         SubcomposeAsyncImage(
