@@ -1,5 +1,7 @@
 package com.dungtran.codebase.ui.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -11,6 +13,7 @@ import com.dungtran.codebase.ui.features.auth.login.LoginRoute
 import com.dungtran.codebase.ui.features.auth.register.RegisterRoute
 import com.dungtran.codebase.ui.features.auth.register_profile.RegisterProfileRoute
 import com.dungtran.codebase.ui.features.main.MainContainerScreen
+import com.dungtran.codebase.ui.features.main.chat.private_chat.PrivateChatRoute
 import com.dungtran.codebase.ui.features.splash.SplashRoute
 import com.dungtran.codebase.ui.features.welcome.WelcomeScreen
 import com.dungtran.codebase.ui.features.welcome.WelcomeViewModel
@@ -24,6 +27,30 @@ fun AppNavHost(
     NavHost(
         navController = navController,
         startDestination = startDestination,
+        enterTransition = {
+            slideIntoContainer(
+                AnimatedContentTransitionScope.SlideDirection.Left,
+                tween(300)
+            )
+        },
+        exitTransition = {
+            slideOutOfContainer(
+                AnimatedContentTransitionScope.SlideDirection.Left,
+                tween(300)
+            )
+        },
+        popEnterTransition = {
+            slideIntoContainer(
+                AnimatedContentTransitionScope.SlideDirection.Right,
+                tween(300)
+            )
+        },
+        popExitTransition = {
+            slideOutOfContainer(
+                AnimatedContentTransitionScope.SlideDirection.Right,
+                tween(300)
+            )
+        }
     ) {
         composable<Screen.Splash> {
             SplashRoute(onTimeout = {
@@ -44,7 +71,7 @@ fun AppNavHost(
                 }
             )
         }
-        
+
         // Login Screen
         composable<Screen.Login> {
             LoginRoute(
@@ -64,16 +91,16 @@ fun AppNavHost(
                 }
             )
         }
-        
+
         // Register Screen
-        composable<Screen.Register> { 
+        composable<Screen.Register> {
             RegisterRoute(
                 modifier = modifier,
                 onRegisterSuccess = { email ->
                     navController.navigate(Screen.RegisterProfile(email = email)) {
                         popUpTo(Screen.Register) { inclusive = true }
                     }
-                }, 
+                },
                 onBackToLogin = { navController.popBackStack() },
             )
         }
@@ -104,6 +131,15 @@ fun AppNavHost(
             MainContainerScreen(
                 rootNavController = navController,
                 modifier = modifier
+            )
+        }
+
+        // Private Chat Screen
+        composable<Screen.PrivateChat> { backStackEntry ->
+            val route = backStackEntry.toRoute<Screen.PrivateChat>()
+            PrivateChatRoute(
+                onBack = { navController.popBackStack() },
+                dataScreen = route
             )
         }
     }

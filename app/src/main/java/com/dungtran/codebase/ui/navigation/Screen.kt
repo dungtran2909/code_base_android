@@ -34,4 +34,10 @@ sealed interface Screen {
     @Serializable data object Chat : Screen
     @Serializable data object Home : Screen
     @Serializable data object Profile : Screen
+    @Serializable data class PrivateChat(
+        val roomId: String,
+        val partnerId: String,
+        val partnerName: String,
+        val partnerAvatar: String
+    ) : Screen
 }

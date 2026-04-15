@@ -40,18 +40,21 @@ import com.dungtran.codebase.R
 import com.dungtran.codebase.domain.model.Chat
 import com.dungtran.codebase.domain.model.User
 import com.dungtran.codebase.ui.common.UserAvatarView
+import com.dungtran.codebase.ui.navigation.Screen
 
 @Composable
 fun ChatRoute(
     modifier: Modifier = Modifier,
-    viewModel: ChatViewModel = hiltViewModel()
+    viewModel: ChatViewModel = hiltViewModel(), 
+    gotoPrivateChatFromItemChat: (Screen.PrivateChat) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     ChatScreen(
         modifier = modifier,
         uiState = uiState,
-        gotoPrivateChat = viewModel::gotoPrivateChat
+        gotoPrivateChat = viewModel::gotoPrivateChat, 
+        gotoPrivateChatFromItemChat = gotoPrivateChatFromItemChat
     )
 }
 
@@ -59,7 +62,8 @@ fun ChatRoute(
 fun ChatScreen(
     modifier: Modifier = Modifier,
     uiState: ChatUiState,
-    gotoPrivateChat: (String) -> Unit
+    gotoPrivateChat: (String) -> Unit, 
+    gotoPrivateChatFromItemChat: (Screen.PrivateChat) -> Unit
 ) {
     Box(
         modifier = modifier
@@ -121,7 +125,16 @@ fun ChatScreen(
                         displayName = partnerInfo?.displayName ?: "Người dùng",
                         lastMessage = chat.lastMessage,
                         photoUrl = partnerInfo?.photoUrl ?: "",
-                        onClick = { }
+                        onClick = { 
+                            gotoPrivateChatFromItemChat(
+                                Screen.PrivateChat(
+                                    roomId = chat.roomId,
+                                    partnerId = partnerId ?: "",
+                                    partnerName = partnerInfo?.displayName ?: "Người dùng",
+                                    partnerAvatar = partnerInfo?.photoUrl ?: ""
+                                )
+                            )
+                        }
                     )
                 }
             }

@@ -25,7 +25,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.dungtran.codebase.ui.features.main.chat.ChatRoute
+import com.dungtran.codebase.ui.features.main.chat.private_chat.PrivateChatRoute
+import com.dungtran.codebase.ui.features.main.chat.private_chat.PrivateChatScreen
 import com.dungtran.codebase.ui.features.main.home.HomeRoute
 import com.dungtran.codebase.ui.features.main.profile.ProfileRoute
 import com.dungtran.codebase.ui.navigation.BottomTab
@@ -104,7 +107,20 @@ fun MainContainerScreen(
             startDestination = Screen.Home,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable<Screen.Chat> { ChatRoute() }
+            composable<Screen.Chat> {
+                ChatRoute(
+                    gotoPrivateChatFromItemChat = { route ->
+                        rootNavController.navigate(
+                            Screen.PrivateChat(
+                                roomId = route.roomId,
+                                partnerId = route.partnerId,
+                                partnerName = route.partnerName,
+                                partnerAvatar = route.partnerAvatar
+                            )
+                        )
+                    }
+                )
+            }
             composable<Screen.Home> { HomeRoute() }
             composable<Screen.Profile> {
                 ProfileRoute(
