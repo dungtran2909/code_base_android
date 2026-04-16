@@ -1,30 +1,126 @@
 package com.dungtran.codebase.ui.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 import com.dungtran.codebase.ui.features.auth.login.LoginRoute
+import com.dungtran.codebase.ui.features.auth.register.RegisterRoute
+import com.dungtran.codebase.ui.features.auth.register_profile.RegisterProfileRoute
 import com.dungtran.codebase.ui.features.main.MainContainerScreen
+import com.dungtran.codebase.ui.features.main.chat.private_chat.PrivateChatRoute
+import com.dungtran.codebase.ui.features.splash.SplashRoute
+import com.dungtran.codebase.ui.features.welcome.WelcomeScreen
+import com.dungtran.codebase.ui.features.welcome.WelcomeViewModel
 
 @Composable
 fun AppNavHost(
+    modifier: Modifier = Modifier,
     navController: NavHostController,
-    modifier: Modifier = Modifier
+    startDestination: Any = Screen.Splash,
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Login,
-        modifier = modifier
+        startDestination = startDestination,
+        enterTransition = {
+            slideIntoContainer(
+                AnimatedContentTransitionScope.SlideDirection.Left,
+                tween(300)
+            )
+        },
+        exitTransition = {
+            slideOutOfContainer(
+                AnimatedContentTransitionScope.SlideDirection.Left,
+                tween(300)
+            )
+        },
+        popEnterTransition = {
+            slideIntoContainer(
+                AnimatedContentTransitionScope.SlideDirection.Right,
+                tween(300)
+            )
+        },
+        popExitTransition = {
+            slideOutOfContainer(
+                AnimatedContentTransitionScope.SlideDirection.Right,
+                tween(300)
+            )
+        }
     ) {
+        composable<Screen.Splash> {
+            SplashRoute(onTimeout = {
+                navController.navigate(Screen.Login) {
+                    popUpTo(Screen.Splash) { inclusive = true }
+                }
+            })
+        }
+
+        composable<Screen.Welcome> {
+            val welcomeViewModel: WelcomeViewModel = hiltViewModel()
+            WelcomeScreen(
+                onFinish = {
+                    welcomeViewModel.completeWelcome()
+                    navController.navigate(Screen.Login) {
+                        popUpTo(Screen.Welcome) { inclusive = true }
+                    }
+                }
+            )
+        }
+
         // Login Screen
         composable<Screen.Login> {
             LoginRoute(
+                modifier = modifier,
                 onLoginSuccess = {
-                    // Truyền tham số cực kỳ an toàn và dễ hiểu
                     navController.navigate(Screen.MainContainer) {
                         popUpTo(Screen.Login) { inclusive = true }
+                    }
+                },
+                onGotoRegisterProfile = { email ->
+                    navController.navigate(Screen.RegisterProfile(email = email)) {
+                        popUpTo(Screen.Login) { inclusive = true }
+                    }
+                },
+                onGotoSignup = {
+                    navController.navigate(Screen.Register)
+                }
+            )
+        }
+
+        // Register Screen
+        composable<Screen.Register> {
+            RegisterRoute(
+                modifier = modifier,
+                onRegisterSuccess = { email ->
+                    navController.navigate(Screen.RegisterProfile(email = email)) {
+                        popUpTo(Screen.Register) { inclusive = true }
+                    }
+                },
+                onBackToLogin = { navController.popBackStack() },
+            )
+        }
+
+        composable<Screen.RegisterProfile> { backStackEntry ->
+            val profileArgs = backStackEntry.toRoute<Screen.RegisterProfile>()
+            RegisterProfileRoute(
+                modifier = modifier,
+                email = profileArgs.email,
+                onRegisterProfileSuccess = {
+                    navController.navigate(Screen.MainContainer) {
+                        popUpTo(Screen.RegisterProfile::class) { inclusive = true }
+                    }
+                },
+                onBackToLogin = {
+                    val popped = navController.popBackStack(Screen.Login, inclusive = false)
+                    if (!popped) {
+                        navController.navigate(Screen.Login) {
+                            popUpTo(0) { inclusive = true }
+                        }
                     }
                 }
             )
@@ -32,7 +128,19 @@ fun AppNavHost(
 
         // MainContainerScreen
         composable<Screen.MainContainer> {
-            MainContainerScreen()
+            MainContainerScreen(
+                rootNavController = navController,
+                modifier = modifier
+            )
+        }
+
+        // Private Chat Screen
+        composable<Screen.PrivateChat> { backStackEntry ->
+            val route = backStackEntry.toRoute<Screen.PrivateChat>()
+            PrivateChatRoute(
+                onBack = { navController.popBackStack() },
+                dataScreen = route
+            )
         }
     }
 }

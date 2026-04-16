@@ -3,6 +3,8 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        maven("https://maven.google.com")
+        maven("https://jitpack.io")
     }
    /* configurations.classpath {
         resolutionStrategy {
@@ -22,4 +24,5 @@ plugins {
     alias(libs.plugins.kotlin.compose) apply false
     alias(libs.plugins.hilt.android) apply false
     alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.google.services) apply false
 }

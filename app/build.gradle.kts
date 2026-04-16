@@ -1,30 +1,77 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.google.services)
+}
+
+fun getProps(fileName: String): Properties {
+    val props = Properties()
+    val propFile = rootProject.file(fileName) // Lấy file từ root project
+    if (propFile.exists()) {
+        props.load(FileInputStream(propFile))
+    }
+    return props
+}
+
+fun Properties.getSafe(key: String): String {
+    val value = getProperty(key) ?: ""
+    return "\"$value\""
 }
 
 android {
     namespace = "com.dungtran.codebase"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = libs.versions.project.compileSdk.get().toInt()
 
     defaultConfig {
         applicationId = "com.dungtran.codebase"
-        minSdk = 29
-        targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        minSdk = libs.versions.project.minSdk.get().toInt()
+        targetSdk = libs.versions.project.targetSdk.get().toInt()
+        versionCode = libs.versions.project.versionCode.get().toInt()
+        versionName = libs.versions.project.versionName.get()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    flavorDimensions += "environment"
+    productFlavors {
+        // 2. Môi trường Development
+        create("develop") {
+            dimension = "environment"
+            applicationIdSuffix = ".dev" // Gói app sẽ là com.dungtran.codebase.dev
+            versionNameSuffix = "-dev"
+            
+            // Bạn có thể định nghĩa Base URL cho API tại đây
+            val devProps = getProps("develop.properties")
+            buildConfigField("String", "BASE_URL", devProps.getSafe("BASE_URL"))
+            buildConfigField("String", "API_KEY", devProps.getSafe("API_KEY"))
+        }
+
+        // 3. Môi trường Production
+        create("product") {
+            dimension = "environment"
+            // Giữ nguyên applicationId gốc: com.dungtran.codebase
+            
+            val prodProps = getProps("product.properties")
+            buildConfigField("String", "BASE_URL", prodProps.getSafe("BASE_URL"))
+            buildConfigField("String", "API_KEY", prodProps.getSafe("API_KEY"))
+        }
+    }
+
+
     buildTypes {
-        release {
+        getByName("debug") {
+            // Cấu hình cho bản Debug của cả 2 môi trường
             isMinifyEnabled = false
+        }
+        release {
+            // Cấu hình cho bản Release của cả 2 môi trường
+            isMinifyEnabled = true // Nên bật để tối ưu app
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -37,6 +84,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -47,6 +95,14 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.com.google.android.material.material)
+    implementation(libs.play.services.auth)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.coil.compose)
     
     // Compose BOM
     implementation(platform(libs.androidx.compose.bom))
@@ -56,8 +112,14 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material.icons.extended)
 
-    // Serialization JSON
+    // Firebase BOM
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
+
+    // Another lib support by Kotlinx
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kotlinx.coroutines.play.services)
 
     // DI (Hilt)
     implementation(libs.hilt.android)
