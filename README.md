@@ -48,6 +48,7 @@
 ---
 
 ## 📂 Project Structure
+```
 app/src/main/java/com/dungtran/codebase/
 ├── data/                       # Data Layer: Implementation of repositories & data sources
 │   ├── local/                  # Local persistence (DataStore, Database)
@@ -77,7 +78,7 @@ app/src/main/java/com/dungtran/codebase/
 │   └── FirebaseModule.kt       # Firebase service providers
 │
 └── utils/                      # Helper classes, Extensions & Constants
-
+```
 
 ---
 
