@@ -25,6 +25,9 @@ import com.dungtran.codebase.ui.common.UserAvatarView
 import com.dungtran.codebase.ui.navigation.Screen
 import com.dungtran.codebase.ui.theme.Primary
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun PrivateChatRoute(
@@ -362,8 +365,8 @@ fun MessageItem(
 }
 
 fun formatChatTimestamp(timestamp: Long): String {
-    val date = java.util.Date(timestamp)
-    val sdf = java.text.SimpleDateFormat("HH:mm dd 'THG' M", java.util.Locale.getDefault())
+    val date = Date(timestamp)
+    val sdf = SimpleDateFormat("HH:mm dd 'THG' M", Locale.getDefault())
     return sdf.format(date).uppercase()
 }
 
@@ -374,6 +377,6 @@ fun shouldShowTimeHeader(currentMsg: Message, prevMsg: Message?): Boolean {
 }
 
 fun formatTime(timestamp: Long): String {
-    val sdf = java.text.SimpleDateFormat("H:mm a", java.util.Locale.getDefault())
-    return sdf.format(java.util.Date(timestamp))
+    val sdf = SimpleDateFormat("H:mm a", Locale.getDefault())
+    return sdf.format(Date(timestamp))
 }

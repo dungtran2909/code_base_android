@@ -81,7 +81,7 @@ fun RegisterProfileScreen(
             painter = painterResource(id = R.drawable.background_screen_type_three),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.FillBounds
         )
 
         IconButton(

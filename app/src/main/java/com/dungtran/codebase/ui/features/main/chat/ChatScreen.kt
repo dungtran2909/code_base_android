@@ -74,14 +74,14 @@ fun ChatScreen(
             painter = painterResource(id = R.drawable.background_screen_type_three),
             contentDescription = null,
             modifier = Modifier.fillMaxSize().padding(top = 40.dp),
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.FillBounds
         )
         Row(
             modifier = modifier
                 .fillMaxWidth()
                 .height(40.dp)
                 .padding(horizontal = 16.dp)
-                .background(color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f))
+                .background(color = MaterialTheme.colorScheme.surface)
         ) {
             Text(
                 modifier = Modifier.fillMaxSize(),

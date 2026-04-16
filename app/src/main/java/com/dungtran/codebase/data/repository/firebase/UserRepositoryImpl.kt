@@ -6,6 +6,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(
@@ -29,6 +30,16 @@ class UserRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getUserDetail(uid: String): Result<User> {
-        TODO("Not yet implemented")
+        return try {
+            val document = firestore.collection("users").document(uid).get().await()
+            val user = document.toObject(User::class.java)?.copy(uid = document.id)
+            if (user != null) {
+                Result.success(user)
+            } else {
+                Result.failure(Exception("User not found"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 }
