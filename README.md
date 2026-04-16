@@ -105,4 +105,4 @@ Contributions are welcome! Feel free to open issues or submit pull requests to i
 - GitHub: [@dungtran2909](https://github.com/dungtran2909)
 
 ---
-*If you find this codebase helpful, please give it a ⭐!*
+*This is just an app base I created myself, with a small function that connects to Firebase to process data.*
