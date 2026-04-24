@@ -72,6 +72,7 @@ android {
         release {
             // Cấu hình cho bản Release của cả 2 môi trường
             isMinifyEnabled = true // Nên bật để tối ưu app
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
